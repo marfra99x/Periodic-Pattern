@@ -102,22 +102,50 @@ vector<Pattern> detectApproxPureConsecutiveMaximal(const vector<long long> &L,
     return out;
 }
 
-int main()
+#include <iostream>
+#include <vector>
+#include <fstream>
+#include <algorithm>
+
+using namespace std;
+
+int main(int argc, char* argv[])
 {
-    vector<long long> L = {1, 3, 5, 8, 11, 14, 18};
+    if (argc < 2) {
+        cerr << "Usage: " << argv[0] << " input_file\n";
+        return 1;
+    }
+
+    ifstream fin(argv[1]);
+    if (!fin) {
+        cerr << "Error: cannot open file " << argv[1] << endl;
+        return 1;
+    }
+
+    vector<long long> L;
+    long long x;
+    while (fin >> x) {
+        L.push_back(x);
+    }
+    fin.close();
+
+    if (L.size() < 3) {
+        cerr << "Input sequence must contain at least 3 elements\n";
+        return 1;
+    }
+
     int k = 1;
     long long Delta = 1;
 
     auto patterns = detectApproxPureConsecutiveMaximal(L, k, Delta);
 
-    for (const auto &p : patterns)
-    {
+    for (const auto &p : patterns) {
         cout << "Pattern { ";
-        for (int i = p.s; i <= p.e; ++i)
-        {
+        for (int i = p.s; i <= p.e; ++i) {
             cout << L[i] << " ";
         }
         cout << "}  dP=" << p.dP << endl;
     }
+
     return 0;
 }
