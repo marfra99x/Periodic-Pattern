@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <fstream>
 
 using namespace std;
 
@@ -102,12 +103,6 @@ vector<Pattern> detectApproxPureConsecutiveMaximal(const vector<long long> &L,
     return out;
 }
 
-#include <iostream>
-#include <vector>
-#include <fstream>
-#include <algorithm>
-
-using namespace std;
 
 int main(int argc, char* argv[])
 {
