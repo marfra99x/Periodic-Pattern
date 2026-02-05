@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstddef>
 #include <fstream>
+#include <chrono>
 
 using namespace std;
 
@@ -103,28 +104,31 @@ vector<Pattern> detectApproxPureConsecutiveMaximal(const vector<long long> &L,
     return out;
 }
 
-
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
-    if (argc < 2) {
+    if (argc < 2)
+    {
         cerr << "Usage: " << argv[0] << " input_file\n";
         return 1;
     }
 
     ifstream fin(argv[1]);
-    if (!fin) {
+    if (!fin)
+    {
         cerr << "Error: cannot open file " << argv[1] << endl;
         return 1;
     }
 
     vector<long long> L;
     long long x;
-    while (fin >> x) {
+    while (fin >> x)
+    {
         L.push_back(x);
     }
     fin.close();
 
-    if (L.size() < 3) {
+    if (L.size() < 3)
+    {
         cerr << "Input sequence must contain at least 3 elements\n";
         return 1;
     }
@@ -132,15 +136,32 @@ int main(int argc, char* argv[])
     int k = 1;
     long long Delta = 1;
 
+    using clock = std::chrono::steady_clock;
+
+    auto t_start = clock::now();
+
     auto patterns = detectApproxPureConsecutiveMaximal(L, k, Delta);
 
-    for (const auto &p : patterns) {
+    auto t_end = clock::now();
+
+    auto elapsed_ms =
+        std::chrono::duration_cast<std::chrono::milliseconds>(t_end - t_start).count();
+
+    cout << "Running time: " << elapsed_ms << " ms" << endl;
+
+    cout << "Detected " << patterns.size() << " patterns\n";
+
+    /*
+    for (const auto &p : patterns)
+    {
         cout << "Pattern { ";
-        for (int i = p.s; i <= p.e; ++i) {
+        for (int i = p.s; i <= p.e; ++i)
+        {
             cout << L[i] << " ";
         }
         cout << "}  dP=" << p.dP << endl;
     }
+    */
 
     return 0;
 }
