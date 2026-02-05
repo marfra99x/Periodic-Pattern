@@ -1,0 +1,123 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+#include <cstddef>
+
+using namespace std;
+
+struct Pattern
+{
+    int s;        // start index (0-based)
+    int e;        // end index (0-based, inclusive)
+    long long dP; // reference period
+};
+
+// Placeholder purity check (replace with your real one)
+static bool isPure(const vector<long long> &L,
+                   int s, int e,
+                   long long dP,
+                   int /*k*/, long long /*Delta*/)
+{
+    long long left = L[s] - dP;
+    long long right = L[e] + dP;
+
+    // check left extension
+    if (binary_search(L.begin(), L.end(), left))
+        return false;
+
+    // check right extension
+    if (binary_search(L.begin(), L.end(), right))
+        return false;
+
+    return true;
+}
+
+vector<Pattern> detectApproxPureConsecutiveMaximal(const vector<long long> &L,
+                                                   int k, long long Delta)
+{
+    int n = (int)L.size();
+    vector<Pattern> out;
+    if (n < 3)
+        return out;
+
+    int s = 0;
+    vector<int> errors;
+    long long dP = L[1] - L[0];
+
+    auto emitIfValidAndPure = [&](int sIdx, int eIdx, long long period)
+    {
+        if (eIdx - sIdx >= 2)
+        {
+            if (isPure(L, sIdx, eIdx, period, k, Delta))
+            {
+                out.push_back({sIdx, eIdx, period});
+            }
+        }
+    };
+
+    for (int i = 1; i < n; ++i)
+    {
+        long long g = L[i] - L[i - 1];
+
+        if (llabs(g - dP) <= Delta)
+        {
+            if (g != dP)
+            {
+                errors.push_back(i);
+
+                if ((int)errors.size() > k)
+                {
+                    emitIfValidAndPure(s, i - 1, dP);
+
+                    s = errors.front();
+                    if (s + 1 < n)
+                        dP = L[s + 1] - L[s];
+
+                    errors.clear();
+                }
+            }
+        }
+        else
+        {
+            emitIfValidAndPure(s, i - 1, dP);
+
+            if (!errors.empty())
+            {
+                s = errors.front();
+                if (s + 1 < n)
+                    dP = L[s + 1] - L[s];
+            }
+            else
+            {
+                s = i - 1;
+                dP = g;
+            }
+
+            errors.clear();
+        }
+    }
+
+    emitIfValidAndPure(s, n - 1, dP);
+    return out;
+}
+
+int main()
+{
+    vector<long long> L = {1, 3, 5, 8, 11, 14, 18};
+    int k = 1;
+    long long Delta = 1;
+
+    auto patterns = detectApproxPureConsecutiveMaximal(L, k, Delta);
+
+    for (const auto &p : patterns)
+    {
+        cout << "Pattern { ";
+        for (int i = p.s; i <= p.e; ++i)
+        {
+            cout << L[i] << " ";
+        }
+        cout << "}  dP=" << p.dP << endl;
+    }
+    return 0;
+}
