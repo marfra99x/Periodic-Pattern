@@ -106,7 +106,7 @@ vector<Pattern> detectApproxPureConsecutiveMaximal(const vector<long long> &L,
 
 int main(int argc, char *argv[])
 {
-    if (argc < 2)
+    if (argc < 3)
     {
         cerr << "Usage: " << argv[0] << " input_file\n";
         return 1;
@@ -119,9 +119,10 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    int max = argv[2] ? atoi(argv[2]) : 10000; // default to 10,000 if not provided
     vector<long long> L;
     long long x;
-    while (fin >> x)
+    while (fin >> x && L.size() < max*10000)
     {
         L.push_back(x);
     }
